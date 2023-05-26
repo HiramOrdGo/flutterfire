@@ -107,20 +107,16 @@ class FirebaseAnalytics extends FirebasePluginPlatform {
     required String name,
     Map<String, Object?>? parameters,
     AnalyticsCallOptions? callOptions,
+    List<AnalyticsEventItem>? items,
   }) async {
     _logEventNameValidation(name);
 
-    parameters?.forEach((key, value) {
-      assert(
-        value is String || value is num,
-        "'string' OR 'number' must be set as the value of the parameter: $key",
-      );
-    });
-
-    await _delegate.logEvent(
+    return _delegate.logEvent(
       name: name,
-      parameters: parameters,
-      callOptions: callOptions,
+      parameters: filterOutNulls(<String, Object?>{
+        ...?parameters,
+        'items': _marshalItems(items),
+      }),
     );
   }
 

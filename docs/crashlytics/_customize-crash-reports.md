@@ -118,7 +118,7 @@ await FirebaseCrashlytics.instance.recordError(
 await FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
 ```
 
-You may also wish to log further information about the error which is possible
+You may also want to log further information about the error which is possible
 using the `information` property:
 
 ```dart

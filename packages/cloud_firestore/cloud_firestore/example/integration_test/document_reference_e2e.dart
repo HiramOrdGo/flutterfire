@@ -24,149 +24,157 @@ void runDocumentReferenceTests() {
       return firestore.doc(prefixedPath);
     }
 
-    group('DocumentReference.snapshots()', () {
-      testWidgets('returns a [Stream]', (_) async {
-        DocumentReference<Map<String, dynamic>> document =
-            await initializeTest('document-snapshot');
-        Stream<DocumentSnapshot<Map<String, dynamic>>> stream =
-            document.snapshots();
-        expect(stream, isA<Stream<DocumentSnapshot<Map<String, dynamic>>>>());
-      });
+    group(
+      'DocumentReference.snapshots()',
+      () {
+        testWidgets('returns a [Stream]', (_) async {
+          DocumentReference<Map<String, dynamic>> document =
+              await initializeTest('document-snapshot');
+          Stream<DocumentSnapshot<Map<String, dynamic>>> stream =
+              document.snapshots();
+          expect(stream, isA<Stream<DocumentSnapshot<Map<String, dynamic>>>>());
+        });
 
-      testWidgets('can be reused', (_) async {
-        final foo = await initializeTest('foo');
+        testWidgets('can be reused', (_) async {
+          final foo = await initializeTest('foo');
 
-        final snapshot = foo.snapshots();
-        final snapshot2 = foo.snapshots();
+          final snapshot = foo.snapshots();
+          final snapshot2 = foo.snapshots();
 
-        expect(
-          await snapshot.first,
-          isA<DocumentSnapshot<Map<String, dynamic>>>()
-              .having((e) => e.exists, 'exists', false),
-        );
-        expect(
-          await snapshot2.first,
-          isA<DocumentSnapshot<Map<String, dynamic>>>()
-              .having((e) => e.exists, 'exists', false),
-        );
-
-        await foo.set({'value': 42});
-
-        expect(
-          await snapshot.first,
-          isA<DocumentSnapshot<Map<String, dynamic>>>()
-              .having((e) => e.data(), 'data', {'value': 42}),
-        );
-        expect(
-          await snapshot2.first,
-          isA<DocumentSnapshot<Map<String, dynamic>>>()
-              .having((e) => e.data(), 'data', {'value': 42}),
-        );
-      });
-
-      testWidgets('listens to a single response', (_) async {
-        DocumentReference<Map<String, dynamic>> document =
-            await initializeTest('document-snapshot');
-        Stream<DocumentSnapshot<Map<String, dynamic>>> stream =
-            document.snapshots();
-        int call = 0;
-
-        stream.listen(
-          expectAsync1(
-            (DocumentSnapshot<Map<String, dynamic>> snapshot) {
-              call++;
-              if (call == 1) {
-                expect(snapshot.exists, isFalse);
-              } else {
-                fail('Should not have been called');
-              }
-            },
-            count: 1,
-            reason: 'Stream should only have been called once.',
-          ),
-        );
-      });
-
-      testWidgets('listens to multiple documents', (_) async {
-        DocumentReference<Map<String, dynamic>> doc1 =
-            await initializeTest('document-snapshot-1');
-        DocumentReference<Map<String, dynamic>> doc2 =
-            await initializeTest('document-snapshot-2');
-
-        await doc1.set({'test': 'value1'});
-        await doc2.set({'test': 'value2'});
-
-        final value1 = doc1.snapshots().first.then((s) => s.data()!['test']);
-        final value2 = doc2.snapshots().first.then((s) => s.data()!['test']);
-
-        await expectLater(value1, completion('value1'));
-        await expectLater(value2, completion('value2'));
-      });
-
-      testWidgets('listens to a multiple changes response', (_) async {
-        DocumentReference<Map<String, dynamic>> document =
-            await initializeTest('document-snapshot-multiple');
-        Stream<DocumentSnapshot<Map<String, dynamic>>> stream =
-            document.snapshots();
-        int call = 0;
-
-        StreamSubscription subscription = stream.listen(
-          expectAsync1(
-            (DocumentSnapshot<Map<String, dynamic>> snapshot) {
-              call++;
-              if (call == 1) {
-                expect(snapshot.exists, isFalse);
-              } else if (call == 2) {
-                expect(snapshot.exists, isTrue);
-                expect(snapshot.data()!['bar'], equals('baz'));
-              } else if (call == 3) {
-                expect(snapshot.exists, isFalse);
-              } else if (call == 4) {
-                expect(snapshot.exists, isTrue);
-                expect(snapshot.data()!['foo'], equals('bar'));
-              } else if (call == 5) {
-                expect(snapshot.exists, isTrue);
-                expect(snapshot.data()!['foo'], equals('baz'));
-              } else {
-                fail('Should not have been called');
-              }
-            },
-            count: 5,
-            reason: 'Stream should only have been called five times.',
-          ),
-        );
-
-        await Future.delayed(
-          const Duration(seconds: 1),
-        ); // allow stream to return a noop-doc
-        await document.set({'bar': 'baz'});
-        await document.delete();
-        await document.set({'foo': 'bar'});
-        await document.update({'foo': 'baz'});
-
-        await subscription.cancel();
-      });
-
-      testWidgets('listeners throws a [FirebaseException]', (_) async {
-        DocumentReference<Map<String, dynamic>> document =
-            firestore.doc('not-allowed/document');
-        Stream<DocumentSnapshot<Map<String, dynamic>>> stream =
-            document.snapshots();
-
-        try {
-          await stream.first;
-        } catch (error) {
-          expect(error, isA<FirebaseException>());
           expect(
-            (error as FirebaseException).code,
-            equals('permission-denied'),
+            await snapshot.first,
+            isA<DocumentSnapshot<Map<String, dynamic>>>()
+                .having((e) => e.exists, 'exists', false),
           );
-          return;
-        }
+          expect(
+            await snapshot2.first,
+            isA<DocumentSnapshot<Map<String, dynamic>>>()
+                .having((e) => e.exists, 'exists', false),
+          );
 
-        fail('Should have thrown a [FirebaseException]');
-      });
-    });
+          await foo.set({'value': 42});
+
+          expect(
+            await snapshot.first,
+            isA<DocumentSnapshot<Map<String, dynamic>>>()
+                .having((e) => e.data(), 'data', {'value': 42}),
+          );
+          expect(
+            await snapshot2.first,
+            isA<DocumentSnapshot<Map<String, dynamic>>>()
+                .having((e) => e.data(), 'data', {'value': 42}),
+          );
+        });
+
+        testWidgets('listens to a single response', (_) async {
+          DocumentReference<Map<String, dynamic>> document =
+              await initializeTest('document-snapshot');
+          Stream<DocumentSnapshot<Map<String, dynamic>>> stream =
+              document.snapshots();
+          int call = 0;
+
+          stream.listen(
+            expectAsync1(
+              (DocumentSnapshot<Map<String, dynamic>> snapshot) {
+                call++;
+                if (call == 1) {
+                  expect(snapshot.exists, isFalse);
+                } else {
+                  fail('Should not have been called');
+                }
+              },
+              count: 1,
+              reason: 'Stream should only have been called once.',
+            ),
+          );
+        });
+
+        testWidgets('listens to multiple documents', (_) async {
+          DocumentReference<Map<String, dynamic>> doc1 =
+              await initializeTest('document-snapshot-1');
+          DocumentReference<Map<String, dynamic>> doc2 =
+              await initializeTest('document-snapshot-2');
+
+          await doc1.set({'test': 'value1'});
+          await doc2.set({'test': 'value2'});
+
+          final value1 = doc1.snapshots().first.then((s) => s.data()!['test']);
+          final value2 = doc2.snapshots().first.then((s) => s.data()!['test']);
+
+          await expectLater(value1, completion('value1'));
+          await expectLater(value2, completion('value2'));
+        });
+
+        testWidgets('listens to a multiple changes response', (_) async {
+          DocumentReference<Map<String, dynamic>> document =
+              await initializeTest('document-snapshot-multiple');
+          Stream<DocumentSnapshot<Map<String, dynamic>>> stream =
+              document.snapshots();
+          int call = 0;
+
+          StreamSubscription subscription = stream.listen(
+            expectAsync1(
+              (DocumentSnapshot<Map<String, dynamic>> snapshot) {
+                call++;
+                if (call == 1) {
+                  expect(snapshot.exists, isFalse);
+                } else if (call == 2) {
+                  expect(snapshot.exists, isTrue);
+                  expect(snapshot.data()!['bar'], equals('baz'));
+                } else if (call == 3) {
+                  expect(snapshot.exists, isFalse);
+                } else if (call == 4) {
+                  expect(snapshot.exists, isTrue);
+                  expect(snapshot.data()!['foo'], equals('bar'));
+                } else if (call == 5) {
+                  expect(snapshot.exists, isTrue);
+                  expect(snapshot.data()!['foo'], equals('baz'));
+                } else {
+                  fail('Should not have been called');
+                }
+              },
+              count: 5,
+              reason: 'Stream should only have been called five times.',
+            ),
+          );
+
+          await Future.delayed(
+            const Duration(seconds: 1),
+          ); // allow stream to return a noop-doc
+          await document.set({'bar': 'baz'});
+          await document.delete();
+          await document.set({'foo': 'bar'});
+          await document.update({'foo': 'baz'});
+
+          await subscription.cancel();
+          await Future.delayed(
+            const Duration(seconds: 1),
+          );
+        });
+
+        testWidgets('listeners throws a [FirebaseException]', (_) async {
+          DocumentReference<Map<String, dynamic>> document =
+              firestore.doc('not-allowed/document');
+          Stream<DocumentSnapshot<Map<String, dynamic>>> stream =
+              document.snapshots();
+
+          try {
+            await stream.first;
+          } catch (error) {
+            expect(error, isA<FirebaseException>());
+            expect(
+              (error as FirebaseException).code,
+              equals('permission-denied'),
+            );
+            return;
+          }
+
+          fail('Should have thrown a [FirebaseException]');
+        });
+      },
+      // This will fail until this is resolved: https://github.com/dart-lang/sdk/issues/52572
+      skip: kIsWeb,
+    );
 
     group('DocumentReference.delete()', () {
       testWidgets('delete() deletes a document', (_) async {
@@ -182,22 +190,27 @@ void runDocumentReferenceTests() {
         expect(snapshot2.exists, isFalse);
       });
 
-      testWidgets('throws a [FirebaseException] on error', (_) async {
-        DocumentReference<Map<String, dynamic>> document =
-            firestore.doc('not-allowed/document');
+      testWidgets(
+        'throws a [FirebaseException] on error',
+        (_) async {
+          DocumentReference<Map<String, dynamic>> document =
+              firestore.doc('not-allowed/document');
 
-        try {
-          await document.delete();
-        } catch (error) {
-          expect(error, isA<FirebaseException>());
-          expect(
-            (error as FirebaseException).code,
-            equals('permission-denied'),
-          );
-          return;
-        }
-        fail('Should have thrown a [FirebaseException]');
-      });
+          try {
+            await document.delete();
+          } catch (error) {
+            expect(error, isA<FirebaseException>());
+            expect(
+              (error as FirebaseException).code,
+              equals('permission-denied'),
+            );
+            return;
+          }
+          fail('Should have thrown a [FirebaseException]');
+        },
+        //This will fail on web until this is resolved: https://github.com/dart-lang/sdk/issues/52572
+        skip: kIsWeb,
+      );
     });
 
     group('DocumentReference.get()', () {
@@ -225,22 +238,27 @@ void runDocumentReferenceTests() {
         skip: kIsWeb,
       );
 
-      testWidgets('throws a [FirebaseException] on error', (_) async {
-        DocumentReference<Map<String, dynamic>> document =
-            firestore.doc('not-allowed/document');
+      testWidgets(
+        'throws a [FirebaseException] on error',
+        (_) async {
+          DocumentReference<Map<String, dynamic>> document =
+              firestore.doc('not-allowed/document');
 
-        try {
-          await document.get();
-        } catch (error) {
-          expect(error, isA<FirebaseException>());
-          expect(
-            (error as FirebaseException).code,
-            equals('permission-denied'),
-          );
-          return;
-        }
-        fail('Should have thrown a [FirebaseException]');
-      });
+          try {
+            await document.get();
+          } catch (error) {
+            expect(error, isA<FirebaseException>());
+            expect(
+              (error as FirebaseException).code,
+              equals('permission-denied'),
+            );
+            return;
+          }
+          fail('Should have thrown a [FirebaseException]');
+          // This will fail until this is resolved: https://github.com/dart-lang/sdk/issues/52572
+        },
+        skip: kIsWeb,
+      );
     });
 
     group('DocumentReference.set()', () {
@@ -305,22 +323,27 @@ void runDocumentReferenceTests() {
         skip: kIsWeb,
       );
 
-      testWidgets('throws a [FirebaseException] on error', (_) async {
-        DocumentReference<Map<String, dynamic>> document =
-            firestore.doc('not-allowed/document');
+      testWidgets(
+        'throws a [FirebaseException] on error',
+        (_) async {
+          DocumentReference<Map<String, dynamic>> document =
+              firestore.doc('not-allowed/document');
 
-        try {
-          await document.set({'foo': 'bar'});
-        } catch (error) {
-          expect(error, isA<FirebaseException>());
-          expect(
-            (error as FirebaseException).code,
-            equals('permission-denied'),
-          );
-          return;
-        }
-        fail('Should have thrown a [FirebaseException]');
-      });
+          try {
+            await document.set({'foo': 'bar'});
+          } catch (error) {
+            expect(error, isA<FirebaseException>());
+            expect(
+              (error as FirebaseException).code,
+              equals('permission-denied'),
+            );
+            return;
+          }
+          fail('Should have thrown a [FirebaseException]');
+          // This will fail until this is resolved: https://github.com/dart-lang/sdk/issues/52572
+        },
+        skip: kIsWeb,
+      );
 
       testWidgets('set and return all possible datatypes', (_) async {
         DocumentReference<Map<String, dynamic>> document =
@@ -335,14 +358,14 @@ void runDocumentReferenceTests() {
           'bool_false': false,
           'map': {
             'foo': 'bar',
-            'bar': {'baz': 'ben'}
+            'bar': {'baz': 'ben'},
           },
           'list': [
             1,
             '2',
             true,
             false,
-            {'foo': 'bar'}
+            {'foo': 'bar'},
           ],
           'null': null,
           'timestamp': Timestamp.now(),
@@ -365,7 +388,7 @@ void runDocumentReferenceTests() {
           data['map'],
           equals(<String, dynamic>{
             'foo': 'bar',
-            'bar': {'baz': 'ben'}
+            'bar': {'baz': 'ben'},
           }),
         );
         expect(
@@ -375,7 +398,7 @@ void runDocumentReferenceTests() {
             '2',
             true,
             false,
-            {'foo': 'bar'}
+            {'foo': 'bar'},
           ]),
         );
         expect(data['null'], equals(null));
@@ -407,13 +430,13 @@ void runDocumentReferenceTests() {
         DocumentReference<Map<String, dynamic>> document =
             await initializeTest('document-update-field-path');
         await document.set({
-          'foo': {'bar': 'baz'}
+          'foo': {'bar': 'baz'},
         });
         DocumentSnapshot<Map<String, dynamic>> snapshot = await document.get();
         expect(
           snapshot.data(),
           equals({
-            'foo': {'bar': 'baz'}
+            'foo': {'bar': 'baz'},
           }),
         );
 
@@ -422,7 +445,7 @@ void runDocumentReferenceTests() {
         expect(
           snapshot2.data(),
           equals({
-            'foo': {'bar': 'toto'}
+            'foo': {'bar': 'toto'},
           }),
         );
       });
@@ -431,24 +454,24 @@ void runDocumentReferenceTests() {
         DocumentReference<Map<String, dynamic>> document =
             await initializeTest('document-update-field-path');
         await document.set({
-          'foo': {'bar': 'baz'}
+          'foo': {'bar': 'baz'},
         });
         DocumentSnapshot<Map<String, dynamic>> snapshot = await document.get();
         expect(
           snapshot.data(),
           equals({
-            'foo': {'bar': 'baz'}
+            'foo': {'bar': 'baz'},
           }),
         );
 
         await document.update({
-          FieldPath(const ['foo', 'bar']): 'toto'
+          FieldPath(const ['foo', 'bar']): 'toto',
         });
         DocumentSnapshot<Map<String, dynamic>> snapshot2 = await document.get();
         expect(
           snapshot2.data(),
           equals({
-            'foo': {'bar': 'toto'}
+            'foo': {'bar': 'toto'},
           }),
         );
       });
@@ -465,7 +488,7 @@ void runDocumentReferenceTests() {
         );
 
         await document.update({
-          FieldPath(const ['foo.bar']): 'toto'
+          FieldPath(const ['foo.bar']): 'toto',
         });
         DocumentSnapshot<Map<String, dynamic>> snapshot2 = await document.get();
         expect(
@@ -474,19 +497,25 @@ void runDocumentReferenceTests() {
         );
       });
 
-      testWidgets('throws if document does not exist', (_) async {
-        DocumentReference<Map<String, dynamic>> document =
-            await initializeTest('document-update-not-exists');
-        try {
-          await document.update({'foo': 'bar'});
-          fail('Should have thrown');
-        } catch (e) {
-          expect(
-            e,
-            isA<FirebaseException>().having((e) => e.code, 'code', 'not-found'),
-          );
-        }
-      });
+      testWidgets(
+        'throws if document does not exist',
+        (_) async {
+          DocumentReference<Map<String, dynamic>> document =
+              await initializeTest('document-update-not-exists');
+          try {
+            await document.update({'foo': 'bar'});
+            fail('Should have thrown');
+          } catch (e) {
+            expect(
+              e,
+              isA<FirebaseException>()
+                  .having((e) => e.code, 'code', 'not-found'),
+            );
+          }
+        },
+        // This will fail until this is resolved: https://github.com/dart-lang/sdk/issues/52572
+        skip: kIsWeb,
+      );
     });
 
     group('withConverter', () {

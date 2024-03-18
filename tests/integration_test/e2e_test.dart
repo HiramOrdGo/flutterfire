@@ -53,7 +53,8 @@ void main() {
       firebase_storage.main();
     } else {
       // Only tests available on Windows
-    firebase_core.main();
+      firebase_core.main();
+      firebase_auth.main();
     }
   });
 }

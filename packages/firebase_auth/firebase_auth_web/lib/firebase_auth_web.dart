@@ -34,14 +34,8 @@ class FirebaseAuthWeb extends FirebaseAuthPlatform {
 
   Completer<void> _initialized = Completer();
 
-  // To set "persistence" on web, it is now required on the v9.0.0 or above Firebase JS SDK to pass the value on calling `initializeAuth()`.
-  // https://firebase.google.com/docs/reference/js/auth.md#initializeauth
-  Persistence? _persistence;
-
   /// The entry point for the [FirebaseAuthWeb] class.
-  FirebaseAuthWeb({required FirebaseApp app, Persistence? persistence})
-      : super(appInstance: app) {
-    _persistence = persistence;
+  FirebaseAuthWeb({required FirebaseApp app}) : super(appInstance: app) {
     // Create a app instance broadcast stream for both delegate listener events
     _userChangesListeners[app.name] =
         StreamController<UserPlatform?>.broadcast();
@@ -91,37 +85,41 @@ class FirebaseAuthWeb extends FirebaseAuthPlatform {
 
   /// Called by PluginRegistry to register this plugin for Flutter Web
   static void registerWith(Registrar registrar) {
-    FirebaseCoreWeb.registerService('auth', (firebaseApp) async {
-      final authDelegate = auth_interop.getAuthInstance(firebaseApp);
-      // if localhost, and emulator was previously set in localStorage, use it
-      if (window.location.hostname == 'localhost' && kDebugMode) {
-        final String? emulatorOrigin =
-            window.sessionStorage[getOriginName(firebaseApp.name)];
+    FirebaseCoreWeb.registerService(
+      'auth',
+      ensurePluginInitialized: (firebaseApp) async {
+        final authDelegate = auth_interop.getAuthInstance(firebaseApp);
+        // if localhost, and emulator was previously set in localStorage, use it
+        if (window.location.hostname == 'localhost' && kDebugMode) {
+          final String? emulatorOrigin =
+              window.sessionStorage[getOriginName(firebaseApp.name)];
 
-        if (emulatorOrigin != null) {
-          try {
-            authDelegate.useAuthEmulator(emulatorOrigin);
-            // ignore: avoid_print
-            print(
-              'Using previously configured Auth emulator at $emulatorOrigin for ${firebaseApp.name} \nTo switch back to production, restart your app with the emulator turned off.',
-            );
-          } catch (e) {
-            if (e.toString().contains('sooner')) {
-              // Happens during hot reload when the emulator is already configured
+          if (emulatorOrigin != null) {
+            try {
+              authDelegate.useAuthEmulator(emulatorOrigin);
               // ignore: avoid_print
               print(
-                'Auth emulator is already configured at $emulatorOrigin for ${firebaseApp.name} and kept across hot reload.\nTo switch back to production, restart your app with the emulator turned off.',
+                'Using previously configured Auth emulator at $emulatorOrigin for ${firebaseApp.name} \nTo switch back to production, restart your app with the emulator turned off.',
               );
-            } else {
-              rethrow;
+            } catch (e) {
+              if (e.toString().contains('sooner')) {
+                // Happens during hot reload when the emulator is already configured
+                // ignore: avoid_print
+                print(
+                  'Auth emulator is already configured at $emulatorOrigin for ${firebaseApp.name} and kept across hot reload.\nTo switch back to production, restart your app with the emulator turned off.',
+                );
+              } else {
+                rethrow;
+              }
             }
           }
         }
-      }
-      await authDelegate.onWaitInitState();
-    });
+        await authDelegate.onWaitInitState();
+      },
+    );
     FirebaseAuthPlatform.instance = FirebaseAuthWeb.instance;
     PhoneMultiFactorGeneratorPlatform.instance = PhoneMultiFactorGeneratorWeb();
+    TotpMultiFactorGeneratorPlatform.instance = TotpMultiFactorGeneratorWeb();
     RecaptchaVerifierFactoryPlatform.instance =
         RecaptchaVerifierFactoryWeb.instance;
   }
@@ -144,21 +142,19 @@ class FirebaseAuthWeb extends FirebaseAuthPlatform {
   auth_interop.Auth? _webAuth;
 
   auth_interop.Auth get delegate {
-    _webAuth ??= auth_interop.getAuthInstance(core_interop.app(app.name),
-        persistence: _persistence);
+    _webAuth ??= auth_interop.getAuthInstance(core_interop.app(app.name));
 
     return _webAuth!;
   }
 
   @override
-  FirebaseAuthPlatform delegateFor(
-      {required FirebaseApp app, Persistence? persistence}) {
-    return FirebaseAuthWeb(app: app, persistence: persistence);
+  FirebaseAuthPlatform delegateFor({required FirebaseApp app}) {
+    return FirebaseAuthWeb(app: app);
   }
 
   @override
   FirebaseAuthWeb setInitialValues({
-    Map<String, dynamic>? currentUser,
+    PigeonUserDetails? currentUser,
     String? languageCode,
   }) {
     // Values are already set on web
@@ -315,7 +311,11 @@ class FirebaseAuthWeb extends FirebaseAuthPlatform {
 
   @override
   Future<void> setLanguageCode(String? languageCode) async {
-    delegate.languageCode = languageCode;
+    if (languageCode == null) {
+      delegate.useDeviceLanguage();
+    } else {
+      delegate.languageCode = languageCode;
+    }
   }
 
   @override
@@ -484,10 +484,14 @@ class FirebaseAuthWeb extends FirebaseAuthPlatform {
         window.sessionStorage[getOriginName(delegate.app.name)] = origin;
       }
     } catch (e) {
-      final String code = (e as auth_interop.AuthError).code;
-      // this catches Firebase Error from web that occurs after hot reloading & hot restarting
-      if (code != 'auth/emulator-config-failed') {
-        throw getFirebaseAuthException(e);
+      if (e is auth_interop.AuthError) {
+        final String code = e.code;
+        // this catches Firebase Error from web that occurs after hot reloading & hot restarting
+        if (code != 'auth/emulator-config-failed') {
+          throw getFirebaseAuthException(e);
+        }
+      } else {
+        rethrow;
       }
     }
   }
@@ -547,6 +551,14 @@ class FirebaseAuthWeb extends FirebaseAuthPlatform {
     } catch (e) {
       verificationFailed(getFirebaseAuthException(e));
     }
+  }
+
+  @override
+  Future<void> revokeTokenWithAuthorizationCode(
+      String authorizationCode) async {
+    throw UnimplementedError(
+      'revokeTokenWithAuthorizationCode() is only available on apple platforms.',
+    );
   }
 }
 

@@ -1,3 +1,20 @@
+## 2.8.1
+
+ - **FIX**(firebase_app_check_web): Activate web app check on startup if it was previously activated ([#11625](https://github.com/firebase/flutterfire/issues/11625)). ([493f2548](https://github.com/firebase/flutterfire/commit/493f254824aa7aedf6ccc5223efbb72d13811c5f))
+
+## 2.8.0
+
+ - **FEAT**: bump Firebase web JS SDK `10.3.1` ([#11588](https://github.com/firebase/flutterfire/issues/11588)). ([e65b270e](https://github.com/firebase/flutterfire/commit/e65b270ea420a696671c26768751df4bdd6a46c1))
+
+## 2.7.0
+
+ - **FEAT**: bump Firebase web JS SDK `10.1.0` ([#11431](https://github.com/firebase/flutterfire/issues/11431)). ([b569f16d](https://github.com/firebase/flutterfire/commit/b569f16d43bff5503a1fde4c2706e198d99a444b))
+
+## 2.6.0
+
+ - **FIX**(core): Omit unnecessary libraries for web ([#10068](https://github.com/firebase/flutterfire/issues/10068)). ([8659d4ed](https://github.com/firebase/flutterfire/commit/8659d4ed805ac92964c2c92d55192f6ef40d721a))
+ - **FEAT**: bump Firebase JS SDK to `9.22.1` ([#11101](https://github.com/firebase/flutterfire/issues/11101)). ([450fd575](https://github.com/firebase/flutterfire/commit/450fd5757684b4d321d9415f32ee02ad193c96f2))
+
 ## 2.5.0
 
  - **FEAT**: update dependency constraints to `sdk: '>=2.18.0 <4.0.0'` `flutter: '>=3.3.0'` ([#10946](https://github.com/firebase/flutterfire/issues/10946)). ([2772d10f](https://github.com/firebase/flutterfire/commit/2772d10fe510dcc28ec2d37a26b266c935699fa6))

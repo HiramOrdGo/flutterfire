@@ -1,3 +1,55 @@
+## 3.8.1
+
+ - Update a dependency to the latest release.
+
+## 3.8.0
+
+ - **FEAT**(firebase_analytics): allow custom parameters (strings and numbers) for events and event items ([#11030](https://github.com/firebase/flutterfire/issues/11030)). ([81dfec93](https://github.com/firebase/flutterfire/commit/81dfec93bcc9490f84fd1e8e3e1bc3737f5eed43))
+
+## 3.7.6
+
+ - Update a dependency to the latest release.
+
+## 3.7.5
+
+ - Update a dependency to the latest release.
+
+## 3.7.4
+
+ - Update a dependency to the latest release.
+
+## 3.7.3
+
+ - Update a dependency to the latest release.
+
+## 3.7.2
+
+ - Update a dependency to the latest release.
+
+## 3.7.1
+
+ - Update a dependency to the latest release.
+
+## 3.7.0
+
+ - **FEAT**(firebase_analytics): support `getSessionId` for android and apple platforms ([#11478](https://github.com/firebase/flutterfire/issues/11478)). ([13aaf03d](https://github.com/firebase/flutterfire/commit/13aaf03dc2050514cea97023fae5c27491bcac8a))
+
+## 3.6.5
+
+ - Update a dependency to the latest release.
+
+## 3.6.4
+
+ - Update a dependency to the latest release.
+
+## 3.6.3
+
+ - Update a dependency to the latest release.
+
+## 3.6.2
+
+ - Update a dependency to the latest release.
+
 ## 3.6.1
 
  - Update a dependency to the latest release.

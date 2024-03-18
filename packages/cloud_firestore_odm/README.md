@@ -74,6 +74,34 @@ flutter pub add --dev cloud_firestore_odm_generator
 flutter pub add --dev json_serializable
 ```
 
+## 5. Enable `create_field_map` and `create_per_field_to_json` of `json_serializable`
+
+
+For the ODM to work, it is necessary to enable the `create_field_map` and `create_per_field_to_json` of `json_serializable`.  
+This can be done by creating a `build.yaml` file next to your `pubspec.yaml` and
+paste the following:
+
+```yaml
+targets:
+  $default:
+    builders:
+      json_serializable:
+        options:
+          create_field_map: true
+          create_per_field_to_json: true
+```
+
+
+This will enable `create_field_map` and `create_per_field_to_json` for the entire project.
+
+Alternatively, you can enable the option on a per-model basis using `json_annotation`'s `@JsonSerializable` object:
+
+```dart
+@JsonSerializable(createFieldMap: true, createPerFieldToJson: true)
+@Collection<Model>(...)
+class MyModel {...}
+```
+
 ## Next Steps
 
 Once installed, read the documentation on [defining models](./doc/defining-models.md).

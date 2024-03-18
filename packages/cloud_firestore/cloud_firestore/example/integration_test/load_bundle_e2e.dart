@@ -2,10 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_firestore_platform_interface/cloud_firestore_platform_interface.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 
@@ -69,62 +68,70 @@ void runLoadBundleTests() {
         );
       });
 
-      testWidgets('loadBundle(): error handling for malformed bundle',
-          (_) async {
-        final url = Uri.https(
-          'api.rnfirebase.io',
-          '/firestore/e2e-tests/malformed-bundle',
-        );
-        final response = await http.get(url);
-        String string = response.body;
-        Uint8List buffer = Uint8List.fromList(string.codeUnits);
+      testWidgets(
+        'loadBundle(): error handling for malformed bundle',
+        (_) async {
+          final url = Uri.https(
+            'api.rnfirebase.io',
+            '/firestore/e2e-tests/malformed-bundle',
+          );
+          final response = await http.get(url);
+          String string = response.body;
+          Uint8List buffer = Uint8List.fromList(string.codeUnits);
 
-        LoadBundleTask task = firestore.loadBundle(buffer);
+          LoadBundleTask task = firestore.loadBundle(buffer);
 
-        await expectLater(
-          task.stream.last,
-          throwsA(
-            isA<FirebaseException>()
-                .having((e) => e.code, 'code', 'load-bundle-error'),
-          ),
-        );
-      });
-
-      testWidgets('loadBundle(): pause and resume stream', (_) async {
-        Uint8List buffer = await loadBundleSetup(3);
-        LoadBundleTask task = firestore.loadBundle(buffer);
-        // Illustrates the pause() & resume() function.
-        // A single stream will stop sending events once the listener is unsubscribed
-
-        // Will listen & pause after first event received
-        await expectLater(
-          task.stream,
-          emits(
-            isA<LoadBundleTaskSnapshot>().having(
-              (ts) => ts.taskState,
-              'taskState',
-              LoadBundleTaskState.running,
+          await expectLater(
+            task.stream.last,
+            throwsA(
+              isA<FirebaseException>()
+                  .having((e) => e.code, 'code', 'load-bundle-error'),
             ),
-          ),
-        );
+          );
+          // This will fail until this is resolved: https://github.com/dart-lang/sdk/issues/52572
+        },
+        skip: kIsWeb,
+      );
 
-        await Future.delayed(const Duration(milliseconds: 1));
+      testWidgets(
+        'loadBundle(): pause and resume stream',
+        (_) async {
+          Uint8List buffer = await loadBundleSetup(3);
+          LoadBundleTask task = firestore.loadBundle(buffer);
+          // Illustrates the pause() & resume() function.
+          // A single stream will stop sending events once the listener is unsubscribed
 
-        // Will resume & pause after second event received
-        await expectLater(
-          task.stream,
-          emits(
-            isA<LoadBundleTaskSnapshot>().having(
-              (ts) => ts.taskState,
-              'taskState',
-              anyOf(LoadBundleTaskState.running, LoadBundleTaskState.success),
+          // Will listen & pause after first event received
+          await expectLater(
+            task.stream,
+            emits(
+              isA<LoadBundleTaskSnapshot>().having(
+                (ts) => ts.taskState,
+                'taskState',
+                LoadBundleTaskState.running,
+              ),
             ),
-          ),
-        );
-      });
+          );
+
+          await Future.delayed(const Duration(milliseconds: 1));
+
+          // Will resume & pause after second event received
+          await expectLater(
+            task.stream,
+            emits(
+              isA<LoadBundleTaskSnapshot>().having(
+                (ts) => ts.taskState,
+                'taskState',
+                anyOf(LoadBundleTaskState.running, LoadBundleTaskState.success),
+              ),
+            ),
+          );
+        },
+        skip: defaultTargetPlatform == TargetPlatform.windows,
+      );
     });
 
-    group('FirebaeFirestore.namedQueryGet()', () {
+    group('FirebaseFirestore.namedQueryGet()', () {
       testWidgets('namedQueryGet() successful', (_) async {
         const int number = 4;
         Uint8List buffer = await loadBundleSetup(number);
@@ -147,24 +154,31 @@ void runLoadBundleTests() {
         );
       });
 
-      testWidgets('namedQueryGet() error', (_) async {
-        Uint8List buffer = await loadBundleSetup(4);
-        LoadBundleTask task = firestore.loadBundle(buffer);
+      testWidgets(
+        'namedQueryGet() error',
+        (_) async {
+          Uint8List buffer = await loadBundleSetup(4);
+          LoadBundleTask task = firestore.loadBundle(buffer);
 
-        // ensure the bundle has been completely cached
-        await task.stream.last;
+          // ensure the bundle has been completely cached
+          await task.stream.last;
 
-        await expectLater(
-          firestore.namedQueryGet(
-            'wrong-name',
-            options: const GetOptions(source: Source.cache),
-          ),
-          throwsA(
-            isA<FirebaseException>()
-                .having((e) => e.code, 'code', 'non-existent-named-query'),
-          ),
-        );
-      });
+          await expectLater(
+            firestore.namedQueryGet(
+              'wrong-name',
+              options: const GetOptions(source: Source.cache),
+            ),
+            // This will fail until this is resolved: https://github.com/dart-lang/sdk/issues/52572
+            // expect(error, isA<FirebaseException>());
+            throwsA(
+              isA<FirebaseException>()
+                  .having((e) => e.code, 'code', 'non-existent-named-query'),
+            ),
+          );
+        },
+        // This will fail until this is resolved: https://github.com/dart-lang/sdk/issues/52572
+        skip: kIsWeb || defaultTargetPlatform == TargetPlatform.windows,
+      );
     });
 
     group('FirebaeFirestore.namedQueryWithConverterGet()', () {
@@ -192,26 +206,31 @@ void runLoadBundleTests() {
         );
       });
 
-      testWidgets('namedQueryWithConverterGet() error', (_) async {
-        Uint8List buffer = await loadBundleSetup(4);
-        LoadBundleTask task = firestore.loadBundle(buffer);
+      testWidgets(
+        'namedQueryWithConverterGet() error',
+        (_) async {
+          Uint8List buffer = await loadBundleSetup(4);
+          LoadBundleTask task = firestore.loadBundle(buffer);
 
-        // ensure the bundle has been completely cached
-        await task.stream.last;
+          // ensure the bundle has been completely cached
+          await task.stream.last;
 
-        await expectLater(
-          firestore.namedQueryWithConverterGet<ConverterPlaceholder>(
-            'wrong-name',
-            options: const GetOptions(source: Source.cache),
-            fromFirestore: ConverterPlaceholder.new,
-            toFirestore: (value, options) => value.toFirestore(),
-          ),
-          throwsA(
-            isA<FirebaseException>()
-                .having((e) => e.code, 'code', 'non-existent-named-query'),
-          ),
-        );
-      });
+          await expectLater(
+            firestore.namedQueryWithConverterGet<ConverterPlaceholder>(
+              'wrong-name',
+              options: const GetOptions(source: Source.cache),
+              fromFirestore: ConverterPlaceholder.new,
+              toFirestore: (value, options) => value.toFirestore(),
+            ),
+            throwsA(
+              isA<FirebaseException>()
+                  .having((e) => e.code, 'code', 'non-existent-named-query'),
+            ),
+          );
+        },
+        // This will fail until this is resolved: https://github.com/dart-lang/sdk/issues/52572
+        skip: kIsWeb || defaultTargetPlatform == TargetPlatform.windows,
+      );
     });
   });
 }

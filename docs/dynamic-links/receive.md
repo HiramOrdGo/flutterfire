@@ -5,6 +5,8 @@ Book: /docs/_book.yaml
 
 # Receive Firebase Dynamic Links in a Flutter app
 
+{% include "docs/dynamic-links/_deprecation_banner.html" %}
+
 To receive the Firebase Dynamic Links that <a href="/docs/dynamic-links/create-links">you created</a>,
 you must include the Dynamic Links SDK in your app and call the
 `FirebaseDynamicLinks.getDynamicLink()` method when your app loads to
@@ -140,7 +142,8 @@ This [GitHub issue](https://github.com/firebase/flutterfire/issues/9469) illustr
 ### Terminated State
 
 Set up the following methods:
- 1. `FirebaseDynamicLinks.getInitialLink` - returns a Future<PendingDynamicLinkData?>
+
+ 1. `FirebaseDynamicLinks.getInitialLink` - returns a `Future<PendingDynamicLinkData?>`
  2. `FirebaseDynamicLinks.onLink` - event handler that returns a `Stream` containing a `PendingDynamicLinkData?`
 
 Android will always receive the link via `FirebaseDynamicLinks.getInitialLink` from a terminated state,
@@ -188,7 +191,7 @@ if (initialLink != null) {
 
 ### Background / Foreground State
 
-Whilst the application is open, or in the background, use The `FirebaseDynamicLinks.onLink`
+Whilst the application is open, or in the background, use the `FirebaseDynamicLinks.onLink`
 getter:
 
 ```dart
@@ -203,7 +206,7 @@ Alternatively, if you wish to identify if an exact Dynamic Link was used to open
 the `getDynamicLink` method instead:
 
 ```dart
-String link = 'https://dynamic-link-domain/ke2Qa';
+String link = 'https://{{'<var>'}}dynamic-link-domain{{'</var>'}}/ke2Qa';
 
 final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getDynamicLink(Uri.parse(link));
 ```

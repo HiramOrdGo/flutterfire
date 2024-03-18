@@ -48,18 +48,20 @@ abstract class FirebaseAuthPlatform extends PlatformInterface {
   static final Object _token = Object();
 
   /// Create an instance using [app] using the existing implementation
-  factory FirebaseAuthPlatform.instanceFor(
-      {required FirebaseApp app,
-      required Map<dynamic, dynamic> pluginConstants,
-      Persistence? persistence}) {
-    return FirebaseAuthPlatform.instance
-        .delegateFor(app: app, persistence: persistence)
-        .setInitialValues(
-            languageCode: pluginConstants['APP_LANGUAGE_CODE'],
-            currentUser: pluginConstants['APP_CURRENT_USER'] == null
-                ? null
-                : Map<String, dynamic>.from(
-                    pluginConstants['APP_CURRENT_USER']));
+  factory FirebaseAuthPlatform.instanceFor({
+    required FirebaseApp app,
+    required Map<dynamic, dynamic> pluginConstants,
+  }) {
+    var currentUser = pluginConstants['APP_CURRENT_USER'];
+
+    if (currentUser != null) {
+      currentUser as List<Object?>;
+      currentUser = PigeonUserDetails.decode(currentUser);
+    }
+    return FirebaseAuthPlatform.instance.delegateFor(app: app).setInitialValues(
+          languageCode: pluginConstants['APP_LANGUAGE_CODE'],
+          currentUser: currentUser,
+        );
   }
 
   /// The current default [FirebaseAuthPlatform] instance.
@@ -84,8 +86,7 @@ abstract class FirebaseAuthPlatform extends PlatformInterface {
   ///
   /// Setting a [persistence] type is only available on web based platforms.
   @protected
-  FirebaseAuthPlatform delegateFor(
-      {required FirebaseApp app, Persistence? persistence}) {
+  FirebaseAuthPlatform delegateFor({required FirebaseApp app}) {
     throw UnimplementedError('delegateFor() is not implemented');
   }
 
@@ -96,7 +97,7 @@ abstract class FirebaseAuthPlatform extends PlatformInterface {
   /// calls.
   @protected
   FirebaseAuthPlatform setInitialValues({
-    Map<String, dynamic>? currentUser,
+    PigeonUserDetails? currentUser,
     String? languageCode,
   }) {
     throw UnimplementedError('setInitialValues() is not implemented');
@@ -366,7 +367,7 @@ abstract class FirebaseAuthPlatform extends PlatformInterface {
   ///   settings > Capabilities). To learn more, visit the
   ///   [Apple documentation](https://developer.apple.com/documentation/security/keychain_services/keychain_items/sharing_access_to_keychain_items_among_a_collection_of_apps).
   Future<void> setSettings({
-    bool? appVerificationDisabledForTesting,
+    bool appVerificationDisabledForTesting = false,
     String? userAccessGroup,
     String? phoneNumber,
     String? smsCode,
@@ -656,5 +657,12 @@ abstract class FirebaseAuthPlatform extends PlatformInterface {
     @visibleForTesting String? autoRetrievedSmsCodeForTesting,
   }) {
     throw UnimplementedError('verifyPhoneNumber() is not implemented');
+  }
+
+  /// Apple only. Users signed in with Apple provider can revoke their token using an authorization code.
+  /// Authorization code can be retrieved on the user credential i.e. userCredential.additionalUserInfo.authorizationCode
+  Future<void> revokeTokenWithAuthorizationCode(String authorizationCode) {
+    throw UnimplementedError(
+        'revokeTokenWithAuthorizationCode() is not implemented');
   }
 }

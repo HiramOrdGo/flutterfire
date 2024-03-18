@@ -17,7 +17,7 @@ import 'package:flutter/services.dart';
 Never convertPlatformException(
   Object exception,
   StackTrace stackTrace, {
-  bool fromPigeon = false,
+  bool fromPigeon = true,
 }) {
   if (exception is! PlatformException) {
     Error.throwWithStackTrace(exception, stackTrace);
@@ -34,18 +34,54 @@ Never convertPlatformException(
 /// A [PlatformException] can only be converted to a [FirebaseAuthException] if
 /// the `details` of the exception exist. Firebase returns specific codes and
 /// messages which can be converted into user friendly exceptions.
-// TODO(rousselGit): Should this return a FirebaseAuthException to avoid having to cast?
 FirebaseException platformExceptionToFirebaseAuthException(
   PlatformException platformException, {
-  bool fromPigeon = false,
+  bool fromPigeon = true,
 }) {
   if (fromPigeon) {
+    var code = platformException.code
+        .replaceAll('ERROR_', '')
+        .toLowerCase()
+        .replaceAll('_', '-');
+
+    final customCode = _getCustomCode(
+      platformException.details,
+      platformException.message,
+    );
+    if (customCode != null) {
+      code = customCode;
+    }
+
+    if (code.isNotEmpty) {
+      if (code == kMultiFactorError) {
+        return parseMultiFactorError(platformException);
+      }
+    }
+
+    AuthCredential? credential;
+
+    if (platformException.details != null &&
+        platformException.details['authCredential'] != null &&
+        platformException.details['authCredential'] is PigeonAuthCredential) {
+      PigeonAuthCredential pigeonAuthCredential =
+          platformException.details['authCredential'];
+
+      credential = AuthCredential(
+        providerId: pigeonAuthCredential.providerId,
+        signInMethod: pigeonAuthCredential.signInMethod,
+        token: pigeonAuthCredential.nativeId,
+        accessToken: pigeonAuthCredential.accessToken,
+      );
+    }
+
     return FirebaseAuthException(
-      code: platformException.code,
-      // Remove leading classname from message
+      code: code,
       message: platformException.message?.split(': ').last,
+      credential: credential,
     );
   }
+
+  // Parsing code to match the format of the other platforms
 
   Map<String, dynamic>? details = platformException.details != null
       ? Map<String, dynamic>.from(platformException.details)
@@ -58,8 +94,8 @@ FirebaseException platformExceptionToFirebaseAuthException(
 
   if (details != null) {
     code = details['code'] ?? code;
-    if (code == 'second-factor-required') {
-      return parseMultiFactorError(details);
+    if (code == kMultiFactorError) {
+      return parseMultiFactorError(platformException);
     }
 
     message = details['message'] ?? message;
@@ -113,11 +149,13 @@ String? _getCustomCode(Map? additionalData, String? message) {
   return null;
 }
 
+const kMultiFactorError = 'second-factor-required';
+
 FirebaseAuthMultiFactorExceptionPlatform parseMultiFactorError(
-    Map<String, Object?> details) {
-  final code = details['code'] as String?;
-  final message = details['message'] as String?;
-  final additionalData = details['additionalData'] as Map<Object?, Object?>?;
+    PlatformException exception) {
+  const code = kMultiFactorError;
+  final message = exception.message;
+  final additionalData = exception.details as Map<Object?, Object?>?;
 
   if (additionalData == null) {
     throw FirebaseAuthException(
@@ -143,7 +181,7 @@ FirebaseAuthMultiFactorExceptionPlatform parseMultiFactorError(
 
   if (auth == null) {
     throw FirebaseAuthException(
-      code: code ?? 'Unknown',
+      code: code,
       message: message,
     );
   }
@@ -164,7 +202,7 @@ FirebaseAuthMultiFactorExceptionPlatform parseMultiFactorError(
   );
 
   return FirebaseAuthMultiFactorExceptionPlatform(
-    code: code ?? 'Unknown',
+    code: code,
     message: message,
     resolver: multiFactorResolver,
   );

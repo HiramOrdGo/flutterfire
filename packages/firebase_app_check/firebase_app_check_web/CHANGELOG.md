@@ -1,3 +1,57 @@
+## 0.1.0+7
+
+ - Update a dependency to the latest release.
+
+## 0.1.0+6
+
+ - Update a dependency to the latest release.
+
+## 0.1.0+5
+
+ - Update a dependency to the latest release.
+
+## 0.1.0+4
+
+ - Update a dependency to the latest release.
+
+## 0.1.0+3
+
+ - Update a dependency to the latest release.
+
+## 0.1.0+2
+
+ - **FIX**(firebase_app_check_web): Activate web app check on startup if it was previously activated ([#11625](https://github.com/firebase/flutterfire/issues/11625)). ([493f2548](https://github.com/firebase/flutterfire/commit/493f254824aa7aedf6ccc5223efbb72d13811c5f))
+
+## 0.1.0+1
+
+ - Update a dependency to the latest release.
+
+## 0.1.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **FEAT**(app-check,web): support for `ReCaptchaEnterpriseProvider`. User facing API updated. ([#11573](https://github.com/firebase/flutterfire/issues/11573)). ([09825edd](https://github.com/firebase/flutterfire/commit/09825edd0e1ecd609e2046fdefda439ce4099087))
+
+## 0.0.11+2
+
+ - Update a dependency to the latest release.
+
+## 0.0.11+1
+
+ - Update a dependency to the latest release.
+
+## 0.0.11
+
+ - **FEAT**(app-check): support for `getLimitedUseToken()` API ([#11091](https://github.com/firebase/flutterfire/issues/11091)). ([9db9326f](https://github.com/firebase/flutterfire/commit/9db9326fe503c31299c9685449150e809543974e))
+
+## 0.0.10+3
+
+ - **FIX**(core): Omit unnecessary libraries for web ([#10068](https://github.com/firebase/flutterfire/issues/10068)). ([8659d4ed](https://github.com/firebase/flutterfire/commit/8659d4ed805ac92964c2c92d55192f6ef40d721a))
+
+## 0.0.10+2
+
+ - Update a dependency to the latest release.
+
 ## 0.0.10+1
 
  - Update a dependency to the latest release.

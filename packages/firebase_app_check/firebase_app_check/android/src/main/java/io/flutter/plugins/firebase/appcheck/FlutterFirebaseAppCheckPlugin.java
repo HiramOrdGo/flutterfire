@@ -34,7 +34,6 @@ public class FlutterFirebaseAppCheckPlugin
 
   private static final String METHOD_CHANNEL_NAME = "plugins.flutter.io/firebase_app_check";
   private final Map<EventChannel, TokenChannelStreamHandler> streamHandlers = new HashMap<>();
-  private final String TAG = "FLTAppCheckPlugin";
 
   private final String debugProvider = "debug";
   private final String safetyNetProvider = "safetyNet";
@@ -72,6 +71,23 @@ public class FlutterFirebaseAppCheckPlugin
     return FirebaseAppCheck.getInstance(app);
   }
 
+  private Task<String> getLimitedUseAppCheckToken(Map<String, Object> arguments) {
+    TaskCompletionSource<String> taskCompletionSource = new TaskCompletionSource<>();
+
+    cachedThreadPool.execute(
+        () -> {
+          try {
+            FirebaseAppCheck firebaseAppCheck = getAppCheck(arguments);
+            AppCheckToken tokenResult = Tasks.await(firebaseAppCheck.getLimitedUseAppCheckToken());
+            taskCompletionSource.setResult(tokenResult.getToken());
+          } catch (Exception e) {
+            taskCompletionSource.setException(e);
+          }
+        });
+
+    return taskCompletionSource.getTask();
+  }
+
   private Task<Void> activate(Map<String, Object> arguments) {
     TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
 
@@ -83,7 +99,7 @@ public class FlutterFirebaseAppCheckPlugin
             switch (provider) {
               case debugProvider:
                 {
-                  FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
+                  FirebaseAppCheck firebaseAppCheck = getAppCheck(arguments);
                   firebaseAppCheck.installAppCheckProviderFactory(
                       DebugAppCheckProviderFactory.getInstance());
                   break;
@@ -194,6 +210,9 @@ public class FlutterFirebaseAppCheckPlugin
       case "FirebaseAppCheck#registerTokenListener":
         methodCallTask = registerTokenListener(call.arguments());
         break;
+      case "FirebaseAppCheck#getLimitedUseAppCheckToken":
+        methodCallTask = getLimitedUseAppCheckToken(call.arguments());
+        break;
       default:
         result.notImplemented();
         return;
@@ -259,6 +278,7 @@ public class FlutterFirebaseAppCheckPlugin
   private void removeEventListeners() {
     for (EventChannel eventChannel : streamHandlers.keySet()) {
       EventChannel.StreamHandler streamHandler = streamHandlers.get(eventChannel);
+      assert streamHandler != null;
       streamHandler.onCancel(null);
       eventChannel.setStreamHandler(null);
     }

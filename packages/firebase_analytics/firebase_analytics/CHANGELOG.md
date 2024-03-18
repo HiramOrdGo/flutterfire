@@ -1,3 +1,55 @@
+## 10.7.1
+
+ - Update a dependency to the latest release.
+
+## 10.7.0
+
+ - **FEAT**(firebase_analytics): allow custom parameters (strings and numbers) for events and event items ([#11030](https://github.com/firebase/flutterfire/issues/11030)). ([81dfec93](https://github.com/firebase/flutterfire/commit/81dfec93bcc9490f84fd1e8e3e1bc3737f5eed43))
+
+## 10.6.4
+
+ - Update a dependency to the latest release.
+
+## 10.6.3
+
+ - Update a dependency to the latest release.
+
+## 10.6.2
+
+ - Update a dependency to the latest release.
+
+## 10.6.1
+
+ - Update a dependency to the latest release.
+
+## 10.6.0
+
+ - **FEAT**: Full support of AGP 8 ([#11699](https://github.com/firebase/flutterfire/issues/11699)). ([bdb5b270](https://github.com/firebase/flutterfire/commit/bdb5b27084d225809883bdaa6aa5954650551927))
+
+## 10.5.1
+
+ - Update a dependency to the latest release.
+
+## 10.5.0
+
+ - **FEAT**(firebase_analytics): support `getSessionId` for android and apple platforms ([#11478](https://github.com/firebase/flutterfire/issues/11478)). ([13aaf03d](https://github.com/firebase/flutterfire/commit/13aaf03dc2050514cea97023fae5c27491bcac8a))
+
+## 10.4.5
+
+ - Update a dependency to the latest release.
+
+## 10.4.4
+
+ - Update a dependency to the latest release.
+
+## 10.4.3
+
+ - Update a dependency to the latest release.
+
+## 10.4.2
+
+ - Update a dependency to the latest release.
+
 ## 10.4.1
 
  - Update a dependency to the latest release.

@@ -1,3 +1,66 @@
+## 2.23.0
+
+ - **FIX**(core,apple): remove usage of deprecated options `trackingID` and `androidClientID` ([#11893](https://github.com/firebase/flutterfire/issues/11893)). ([4dfbe5a4](https://github.com/firebase/flutterfire/commit/4dfbe5a485284ae7fa1356284e7971e96db15f27))
+ - **FEAT**: bump iOS SDK to version 10.18.0 ([#11916](https://github.com/firebase/flutterfire/issues/11916)). ([abbea170](https://github.com/firebase/flutterfire/commit/abbea170a6d87f6e313f0244395b60f5b2b3f64e))
+ - **FEAT**: bump firebase android SDK BOM to `32.6.0` ([#11910](https://github.com/firebase/flutterfire/issues/11910)). ([8467816c](https://github.com/firebase/flutterfire/commit/8467816c234f979b40fa1ad4f2737e27ccd33271))
+
+## 2.22.0
+
+ - **FEAT**: update iOS SDK to version 10.17.0 ([#11839](https://github.com/firebase/flutterfire/issues/11839)). ([f78838ae](https://github.com/firebase/flutterfire/commit/f78838ae480e28f0f83f1b7cf10bf424ac0593d6))
+ - **FEAT**(windows): add platform logging for core, auth, firestore and storage ([#11790](https://github.com/firebase/flutterfire/issues/11790)). ([e7d428d1](https://github.com/firebase/flutterfire/commit/e7d428d14be1535a2d579d4b2d376fbb81f06742))
+
+## 2.21.0
+
+ - **FEAT**: bump Firebase android SDK BoM `32.5.0` ([#11803](https://github.com/firebase/flutterfire/issues/11803)). ([adf98ea4](https://github.com/firebase/flutterfire/commit/adf98ea49bfb1c601f452f00c2d0dd74ada858f2))
+
+## 2.20.0
+
+ - **FIX**(core,windows): remove unused map of string that was causing a crash ([#11745](https://github.com/firebase/flutterfire/issues/11745)). ([895da052](https://github.com/firebase/flutterfire/commit/895da052207d832d30c9eeceafabac3051e1dabb))
+ - **FIX**(core,windows): allow user to override MSVC_RUNTIME_MODE ([#11150](https://github.com/firebase/flutterfire/issues/11150)). ([3be28676](https://github.com/firebase/flutterfire/commit/3be28676578c53ce4a26bc2f8f480630b579350c))
+ - **FEAT**: bump Firebase iOS SDK `10.16.0` ([#11698](https://github.com/firebase/flutterfire/issues/11698)). ([666f90ea](https://github.com/firebase/flutterfire/commit/666f90ea1eb090ee3f2397c9ffde8ddaf934f36c))
+ - **FEAT**(storage,windows): Add windows support ([#11617](https://github.com/firebase/flutterfire/issues/11617)). ([87ea02c8](https://github.com/firebase/flutterfire/commit/87ea02c8ae03eb351636cf202961ad0df6caebd8))
+
+## 2.19.0
+
+ - **FEAT**(firestore,windows): add Filters to windows ([#11726](https://github.com/firebase/flutterfire/issues/11726)). ([dde59d46](https://github.com/firebase/flutterfire/commit/dde59d466e1b6cc483ba29654a35f198d6e8c9ae))
+
+## 2.18.0
+
+ - **FEAT**: Full support of AGP 8 ([#11699](https://github.com/firebase/flutterfire/issues/11699)). ([bdb5b270](https://github.com/firebase/flutterfire/commit/bdb5b27084d225809883bdaa6aa5954650551927))
+ - **FEAT**(firestore,windows): add support to Windows ([#11516](https://github.com/firebase/flutterfire/issues/11516)). ([e51d2a2d](https://github.com/firebase/flutterfire/commit/e51d2a2d287f4162f5a67d8200f1bf57fc2afe14))
+
+## 2.17.0
+
+ - **FEAT**: bump Firebase android SDK `32.3.1` ([#11663](https://github.com/firebase/flutterfire/issues/11663)). ([639bc2ea](https://github.com/firebase/flutterfire/commit/639bc2eaabe320a533ec643d4f0c91d2ab3ea5d1))
+
+## 2.16.0
+
+ - **FEAT**: bump Firebase iOS SDK `10.15.0` ([#11586](https://github.com/firebase/flutterfire/issues/11586)). ([baedd3ee](https://github.com/firebase/flutterfire/commit/baedd3eec24e8df9fa0602b92c60fc2535cd449b))
+ - **FEAT**: bump Firebase android SDK `32.2.3` ([#11587](https://github.com/firebase/flutterfire/issues/11587)). ([26415d54](https://github.com/firebase/flutterfire/commit/26415d5477634704c13a1e2dbaad5b7f4cf41c06))
+ - **FEAT**(core,windows): Change the windows plugin compiling way ([#11594](https://github.com/firebase/flutterfire/issues/11594)). ([3dab95e0](https://github.com/firebase/flutterfire/commit/3dab95e01f7f71680aff84db4e9dccfe1e77643b))
+ - **FEAT**(auth,windows): add Windows support to auth plugin ([#11089](https://github.com/firebase/flutterfire/issues/11089)). ([0cedfc85](https://github.com/firebase/flutterfire/commit/0cedfc8580bedd9e21b262537e643dbace0d7114))
+
+## 2.15.1
+
+ - Update a dependency to the latest release.
+
+## 2.15.0
+
+ - **FEAT**: bump Firebase android SDK to `32.2.0` ([#11282](https://github.com/firebase/flutterfire/issues/11282)). ([7fc1f643](https://github.com/firebase/flutterfire/commit/7fc1f643303ceb8294c9b46390148969e306faeb))
+ - **FEAT**(core,windows): Add api to access firebase cpp objects ([#11254](https://github.com/firebase/flutterfire/issues/11254)). ([c26f9d8e](https://github.com/firebase/flutterfire/commit/c26f9d8ef78336277667b50f67de60bbda4c2622))
+ - **FEAT**: bump Firebase iOS SDK to `10.12.0` ([#11268](https://github.com/firebase/flutterfire/issues/11268)). ([31637246](https://github.com/firebase/flutterfire/commit/316372467888af24698aab20509bdb0832875293))
+ - **FEAT**: bump Firebase Android SDK to 32.1.1 ([#11256](https://github.com/firebase/flutterfire/issues/11256)). ([81156d10](https://github.com/firebase/flutterfire/commit/81156d1062d3eb3c6c83833887ca054cf66cfa13))
+ - **FEAT**: bump Firebase iOS SDK to 10.11.0 ([#11257](https://github.com/firebase/flutterfire/issues/11257)). ([179a91b4](https://github.com/firebase/flutterfire/commit/179a91b44191940e4e63398630b12aa9d178314c))
+
+## 2.14.0
+
+ - **FIX**(core,apple): pass boolean value instead of int to `setDataCollectionDefaultEnabled()` ([#11039](https://github.com/firebase/flutterfire/issues/11039)). ([67b051fd](https://github.com/firebase/flutterfire/commit/67b051fda24d4e7f50023a24001bdc6b0cc7f7bf))
+ - **FEAT**: bump Firebase iOS SDK to `10.10.0`. Requires Xcode version >= `14.1`. ([#11088](https://github.com/firebase/flutterfire/issues/11088)). ([615b2d48](https://github.com/firebase/flutterfire/commit/615b2d48b7559f8bee4211111d2a0ae00ed84c3e))
+
+## 2.13.1
+
+ - **FIX**(core,windows): building improvements ([#10972](https://github.com/firebase/flutterfire/issues/10972)). ([4897fa02](https://github.com/firebase/flutterfire/commit/4897fa02e2963961f24f1ff3a5b8d5e890e919ce))
+
 ## 2.13.0
 
  - **FEAT**: bump Firebase Android SDK to 32.0.0 ([#10913](https://github.com/firebase/flutterfire/issues/10913)). ([77459105](https://github.com/firebase/flutterfire/commit/774591050a94e9162eef0aee49bfc7fab97db1c6))

@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include "firebase/app.h"
+#include "firebase_core/plugin_version.h"
 #include "messages.g.h"
 
 // For getPlatformVersion; remove unless needed for your plugin implementation.
@@ -18,14 +19,18 @@
 
 #include <future>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
+
 using ::firebase::App;
 
 namespace firebase_core_windows {
+
+static std::string kLibraryName = "flutter-fire-core";
 
 // static
 void FirebaseCorePlugin::RegisterWithRegistrar(
@@ -36,6 +41,10 @@ void FirebaseCorePlugin::RegisterWithRegistrar(
   FirebaseAppHostApi::SetUp(registrar->messenger(), plugin.get());
 
   registrar->AddPlugin(std::move(plugin));
+
+  // Register for platform logging
+  App::RegisterLibrary(kLibraryName.c_str(), getPluginVersion().c_str(),
+                       nullptr);
 }
 
 FirebaseCorePlugin::FirebaseCorePlugin() {}
@@ -95,9 +104,9 @@ void FirebaseCorePlugin::InitializeApp(
     const PigeonFirebaseOptions &initialize_app_request,
     std::function<void(ErrorOr<PigeonInitializeResponse> reply)> result) {
   // Create an app
-  App *app;
-  app = App::Create(PigeonFirebaseOptionsToAppOptions(initialize_app_request),
-                    app_name.c_str());
+  App *app =
+      App::Create(PigeonFirebaseOptionsToAppOptions(initialize_app_request),
+                  app_name.c_str());
 
   // Send back the result to Flutter
   result(AppToPigeonInitializeResponse(*app));
@@ -107,14 +116,17 @@ void FirebaseCorePlugin::InitializeCore(
     std::function<void(ErrorOr<flutter::EncodableList> reply)> result) {
   // TODO: Missing function to get the list of currently initialized apps
   std::vector<PigeonInitializeResponse> initializedApps;
+  std::vector<App *> all_apps = App::GetApps();
+  for (const App *app : all_apps) {
+    initializedApps.push_back(AppToPigeonInitializeResponse(*app));
+  }
 
   flutter::EncodableList encodableList;
 
-  // Insert the contents of the vector into the EncodableList
-  // for (const auto &item : initializedApps) {
-  //  encodableList.push_back(flutter::EncodableValue(item));
-  //}
-  result(flutter::EncodableList());
+  for (const auto &item : initializedApps) {
+    encodableList.push_back(flutter::CustomEncodableValue(item));
+  }
+  result(encodableList);
 }
 
 void FirebaseCorePlugin::OptionsFromResource(

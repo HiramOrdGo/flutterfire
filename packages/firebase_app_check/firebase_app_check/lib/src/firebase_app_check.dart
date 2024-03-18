@@ -59,12 +59,12 @@ class FirebaseAppCheck extends FirebasePluginPlatform {
   ///
   /// For more information, see [the Firebase Documentation](https://firebase.google.com/docs/app-check)
   Future<void> activate({
-    String? webRecaptchaSiteKey,
+    WebProvider? webProvider,
     AndroidProvider androidProvider = AndroidProvider.playIntegrity,
     AppleProvider appleProvider = AppleProvider.deviceCheck,
   }) {
     return _delegate.activate(
-      webRecaptchaSiteKey: webRecaptchaSiteKey,
+      webProvider: webProvider,
       androidProvider: androidProvider,
       appleProvider: appleProvider,
     );
@@ -84,6 +84,16 @@ class FirebaseAppCheck extends FirebasePluginPlatform {
   /// If true, the SDK automatically refreshes App Check tokens as needed.
   Future<void> setTokenAutoRefreshEnabled(bool isTokenAutoRefreshEnabled) {
     return _delegate.setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled);
+  }
+
+  /// Requests a limited-use Firebase App Check token. This method should be used only
+  /// if you need to authorize requests to a non-Firebase backend.
+  //
+  // Returns limited-use tokens that are intended for use with your non-Firebase backend
+  // endpoints that are protected with Replay Protection. This method does not affect
+  // the token generation behavior of the `getToken()` method.
+  Future<String> getLimitedUseToken() {
+    return _delegate.getLimitedUseToken();
   }
 
   /// Registers a listener to changes in the token state.

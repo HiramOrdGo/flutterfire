@@ -6,6 +6,9 @@
 
 #include <flutter/plugin_registrar_windows.h>
 
+#include <string>
+#include <vector>
+
 #include "firebase_core_plugin.h"
 
 void FirebaseCorePluginCApiRegisterWithRegistrar(

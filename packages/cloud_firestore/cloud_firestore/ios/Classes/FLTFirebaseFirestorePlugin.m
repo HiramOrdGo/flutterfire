@@ -150,7 +150,13 @@ FlutterStandardMethodCodec *_codec;
 }
 
 - (void)detachFromEngineForRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  [self cleanupEventListeners];
+    @try {
+        [self cleanupEventListeners];
+    }
+    @catch (NSException * e) {
+        NSLog(@"Hmmm, this is a bad soln");
+    }
+    @finally {}
 }
 
 #pragma mark - FLTFirebasePlugin
